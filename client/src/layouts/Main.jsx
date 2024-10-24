@@ -1,29 +1,29 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Shared/Navbar/Navbar";
 import Footer from "../components/Shared/Footer/Footer";
-import { useEffect, useState } from "react";
-import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
+import { useState } from "react";
+// import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 
 const Main = () => {
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  }, []);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 3000);
+  // }, []);
   return (
     <div>
       {loading ? (
         <div className="flex justify-center items-center h-[100vh] w-[100%]">
-          <ClimbingBoxLoader
+          {/* <ClimbingBoxLoader
             color={"#F37A24"}
             loading={loading}
             size={15}
             aria-label="Loading Spinner"
             data-testid="loader"
-          />
+          /> */}
         </div>
       ) : (
         <div>
