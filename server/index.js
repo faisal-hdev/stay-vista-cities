@@ -36,6 +36,8 @@ const verifyToken = async (req, res, next) => {
   });
 };
 
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.s3zryfx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.s3zryfx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
@@ -76,6 +78,15 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    // All database collection are here
+    const roomsCollection = client.db("stayVistaCities").collection("rooms");
+
+    // Get all rooms from db
+    app.get("/rooms", async (req, res) => {
+      const result = await roomsCollection.find().toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
