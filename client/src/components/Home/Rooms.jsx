@@ -6,9 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const Rooms = () => {
-  const axiosSecure = useAxiosSecure();
   // const [rooms, setRooms] = useState([]);
   // const [loading, setLoading] = useState(false);
+  const axiosSecure = useAxiosSecure();
 
   const { data: rooms = [], isLoading } = useQuery({
     queryKey: ["rooms"],
@@ -18,6 +18,7 @@ const Rooms = () => {
     },
   });
 
+  if (isLoading) return <LoadingSpinner />;
   // useEffect(() => {
   //   setLoading(true);
   //   fetch(`http://localhost:8000/rooms`)
@@ -27,9 +28,7 @@ const Rooms = () => {
   //       setLoading(false);
   //     });
   // }, []);
-
   // if (loading) return <LoadingSpinner />;
-  if (isLoading) return <LoadingSpinner />;
 
   return (
     <Container>
