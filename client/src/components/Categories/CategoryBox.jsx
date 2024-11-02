@@ -4,17 +4,19 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const CategoryBox = ({ label, icon: Icon }) => {
   const navigate = useNavigate();
+  // eslint-disable-next-line no-unused-vars
   const [params, setParams] = useSearchParams();
   const category = params.get("category");
-  console.log(params.get("category"));
-
+  /* ------- 1. Create query string ------ */
   const handleClk = () => {
     let currentQuery = { category: label };
-
     const url = querryString.stringifyUrl({
       url: "/",
       query: currentQuery,
     });
+    // url output-----> /Category=label
+
+    /* ------------- 2. Set query string in url ------------- */
     navigate(url);
   };
   return (
