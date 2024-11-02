@@ -15,14 +15,15 @@ const SignUp = () => {
     setLoading,
   } = useAuth();
 
+  // User Register
   const handleSubmite = async (e) => {
     setLoading(true);
     e.preventDefault();
-    const form = e.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const password = form.password.value;
-    const image = form.image.files[0];
+    const form = e?.target;
+    const name = form?.name?.value;
+    const email = form?.email?.value;
+    const password = form?.password?.value;
+    const image = form?.image?.files[0];
     const formData = new FormData();
     formData.append("image", image);
 
