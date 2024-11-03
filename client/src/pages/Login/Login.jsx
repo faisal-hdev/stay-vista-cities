@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,8 @@ import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location?.state || "/";
   // eslint-disable-next-line no-unused-vars
   const { signIn, loading, setLoading, signInWithGoogle, resetPassword } =
     useAuth();
@@ -25,7 +27,7 @@ const Login = () => {
       setLoading(true);
       // 1. sign in user
       await signIn(email, password);
-      navigate("/");
+      navigate(from);
       toast.success("Login Successful");
     } catch (err) {
       console.log(err);
@@ -53,7 +55,7 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       await signInWithGoogle();
-      navigate("/");
+      navigate(from);
       toast.success("Login Successful");
     } catch (err) {
       console.log(err);

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "./../../hooks/useAuth";
 import axios from "axios";
@@ -7,6 +7,8 @@ import { TbFidgetSpinner } from "react-icons/tb";
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location?.state || "/";
   const {
     updateUserProfile,
     createUser,
@@ -44,7 +46,7 @@ const SignUp = () => {
       // 3. Save username and photo in firebase
       await updateUserProfile(name, photo);
       toast.success("Signup Successful");
-      navigate("/");
+      navigate(from);
     } catch (err) {
       console.log(err);
       toast.error(err.message);
@@ -56,7 +58,7 @@ const SignUp = () => {
   const handleGoogleLogin = async () => {
     try {
       await signInWithGoogle();
-      navigate("/");
+      navigate(from);
       toast.success("Login Successful");
     } catch (err) {
       console.log(err);
