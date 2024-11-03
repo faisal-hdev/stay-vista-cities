@@ -21,12 +21,12 @@ const RoomReservation = ({ room }) => {
       <hr />
       <div className="flex justify-center">
         <DateRange
-          showDateDisplay={false}
-          rangeColors={["#F6536D"]}
           editableDateInputs={true}
           onChange={(item) => setState([item.selection])}
           moveRangeOnFirstSelection={false}
           ranges={state}
+          rangeColors={["#F6536D"]}
+          showDateDisplay={false}
         />
       </div>
       <hr />
