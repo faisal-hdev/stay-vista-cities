@@ -43,11 +43,12 @@ const SignUp = () => {
 
       // 3. Save username and photo in firebase
       await updateUserProfile(name, photo);
-      navigate("/");
       toast.success("Signup Successful");
+      navigate("/");
     } catch (err) {
       console.log(err);
       toast.error(err.message);
+      setLoading(false);
     }
   };
 

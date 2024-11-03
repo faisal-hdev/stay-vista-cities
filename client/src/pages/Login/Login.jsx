@@ -4,18 +4,21 @@ import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { TbFidgetSpinner } from "react-icons/tb";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
   // eslint-disable-next-line no-unused-vars
-  const { signIn, resetPassword, loading, setLoading, signInWithGoogle } =
+  const { signIn, loading, setLoading, signInWithGoogle, resetPassword } =
     useAuth();
+  const [email, setEmail] = useState("");
 
-  // User singin
+  // Handle User singin
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e?.target;
     const email = form?.email?.value;
+    setEmail(email);
     const password = form?.password?.value;
 
     try {
@@ -23,10 +26,25 @@ const Login = () => {
       // 1. sign in user
       await signIn(email, password);
       navigate("/");
-      toast.success("Signup Successful");
+      toast.success("Login Successful");
     } catch (err) {
       console.log(err);
       toast.error(err.message);
+      setLoading(false);
+    }
+  };
+
+  // Handle reset password
+  const handleResetPassword = async () => {
+    // console.log("reset pass", email);
+    if (!email) return toast.error("Please write your email first");
+    try {
+      await resetPassword(email);
+      toast.success("Request Success! Check your email for further process...");
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
       setLoading(false);
     }
   };
@@ -64,6 +82,7 @@ const Login = () => {
                 type="email"
                 name="email"
                 id="email"
+                onBlur={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Enter Your Email Here"
                 className="w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-rose-500 bg-gray-200 text-gray-900"
@@ -96,13 +115,16 @@ const Login = () => {
               {loading ? (
                 <TbFidgetSpinner className="animate-spin mx-auto" />
               ) : (
-                "SignIn"
+                "Log In"
               )}
             </button>
           </div>
         </form>
         <div className="space-y-1">
-          <button className="text-xs hover:underline hover:text-rose-500 text-gray-400">
+          <button
+            onClick={handleResetPassword}
+            className="text-xs hover:underline hover:text-rose-500 text-gray-400"
+          >
             Forgot password?
           </button>
         </div>
