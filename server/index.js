@@ -3,7 +3,12 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const {
+  MongoClient,
+  ServerApiVersion,
+  ObjectId,
+  Timestamp,
+} = require("mongodb");
 const jwt = require("jsonwebtoken");
 
 const port = process.env.PORT || 8000;
@@ -48,6 +53,11 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    // All database collection are here
+    const roomsCollection = client.db("stayVistaCities").collection("rooms");
+
+    const usersCollection = client.db("stayVistaCities").collection("users");
+
     // auth related api
     app.post("/jwt", async (req, res) => {
       const user = req.body;
@@ -78,8 +88,25 @@ async function run() {
       }
     });
 
-    // All database collection are here
-    const roomsCollection = client.db("stayVistaCities").collection("rooms");
+    // Save a user data in db
+    app.put("/user", async (req, res) => {
+      const user = req.body;
+      const query = { email: user?.email };
+      // Chech if user already exists in db
+      const isExist = await usersCollection.findOne(query);
+      if (isExist) return res.send(isExist);
+
+      // Save user for the first time
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...user,
+          Timestamp: Date.now(),
+        },
+      };
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
 
     // Get all rooms from db
     app.get("/rooms", async (req, res) => {
