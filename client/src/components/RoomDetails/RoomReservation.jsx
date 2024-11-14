@@ -5,9 +5,8 @@ import { DateRange } from "react-date-range";
 import { differenceInCalendarDays } from "date-fns";
 
 const RoomReservation = ({ room }) => {
-  console.log("Start date ---->", new Date(room.from).toLocaleString());
-  console.log("End date ---->", new Date(room.to).toLocaleString());
-
+  // console.log("Start date ---->", new Date(room.from).toLocaleString());
+  // console.log("End date ---->", new Date(room.to).toLocaleString());
   const [state, setState] = useState([
     {
       startDate: new Date(room?.from),
@@ -21,9 +20,6 @@ const RoomReservation = ({ room }) => {
     differenceInCalendarDays(new Date(room?.to), new Date(room?.from)) *
       room?.price
   );
-
-  console.log(typeof totalPrice);
-
   return (
     <div className="rounded-xl border-[1px] border-neutral-200 overflow-hidden bg-white">
       <div className="flex items-center gap-1 p-4">
