@@ -54,8 +54,9 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // All database collection are here
+    // Rooms collection
     const roomsCollection = client.db("stayVistaCities").collection("rooms");
-
+    // User collection
     const usersCollection = client.db("stayVistaCities").collection("users");
 
     // auth related api
@@ -116,6 +117,13 @@ async function run() {
         },
       };
       const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    // Get a user info  by email from db
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.findOne({ email });
       res.send(result);
     });
 
