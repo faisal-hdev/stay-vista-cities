@@ -73,6 +73,7 @@ async function run() {
         })
         .send({ success: true });
     });
+
     // Logout
     app.get("/logout", async (req, res) => {
       try {
@@ -107,7 +108,6 @@ async function run() {
           return res.send(isExist);
         }
       }
-
       // Save user for the first time
       const options = { upsert: true };
       const updateDoc = {
@@ -120,7 +120,7 @@ async function run() {
       res.send(result);
     });
 
-    // Get a user info  by email from db
+    // Get a user info by email from db
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
       const result = await usersCollection.findOne({ email });
