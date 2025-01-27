@@ -23,8 +23,6 @@ const RoomDetails = () => {
   });
 
   if (isLoading) return <LoadingSpinner />;
-  // console.log(room);
-
   return (
     <Container>
       <Helmet>
@@ -95,8 +93,8 @@ const RoomDetails = () => {
               <hr />
             </div>
 
+            {/* RoomReservation */}
             <div className="md:col-span-3 order-first md:order-last mb-10">
-              {/* RoomReservation */}
               <RoomReservation room={room} />
             </div>
           </div>

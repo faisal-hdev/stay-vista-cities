@@ -21,6 +21,7 @@ const Navbar = () => {
   };
 
   const modalHandler = async () => {
+    console.log("I want to be a host");
     try {
       const currentUser = {
         email: user?.email,
