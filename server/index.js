@@ -1,4 +1,5 @@
 const express = require("express");
+// import { PaymentIntents } from "./node_modules/stripe/esm/resources/PaymentIntents";
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
@@ -10,6 +11,7 @@ const {
   // timestamp,
 } = require("mongodb");
 const jwt = require("jsonwebtoken");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 8000;
 
 // middleware
@@ -52,10 +54,11 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // All database collection are here
-    // Rooms collection
     const roomsCollection = client.db("stayVistaCities").collection("rooms");
-    // User collection
     const usersCollection = client.db("stayVistaCities").collection("users");
+    const bookingsCollection = client
+      .db("stayVistaCities")
+      .collection("bookings");
 
     // Verify admin middleware
     const verifyAdmin = async (req, res, next) => {
@@ -114,6 +117,24 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    // Create-payment-intent
+    app.post("/create-payment-intent", verifyToken, async (req, res) => {
+      const price = req.body.price;
+      const priceInCent = parseFloat(price) * 100;
+      if (!price || priceInCent < 1) return;
+      // generate clientSecret
+      const { client_secret } = await stripe.paymentIntents.create({
+        amount: priceInCent,
+        currency: "usd",
+        // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+      // send client secret as response
+      res.send({ clientSecret: client_secret });
     });
 
     // Save a user data in db
@@ -212,6 +233,37 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await roomsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Save a booking data in db
+    app.post("/booking", verifyToken, async (req, res) => {
+      const bookingData = req.body;
+      // save room booking info
+      const result = await bookingsCollection.insertOne(bookingData);
+
+      // change room availability status
+      // const roomId = bookingData?.roomId;
+      // const query = { _id: new ObjectId(roomId) };
+      // const updateDoc = {
+      //   $set: { booked: true },
+      // };
+      // const updatedRoom = await roomsCollection.updateOne(query, updateDoc);
+      // console.log(updatedRoom);
+      // res.send({ result, updatedRoom });
+      res.send(result);
+    });
+
+    // update room status
+    app.patch("/room/status/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      // change room availability status
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: { booked: status },
+      };
+      const result = await roomsCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 

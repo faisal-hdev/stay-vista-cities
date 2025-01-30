@@ -6,7 +6,7 @@ import { differenceInCalendarDays } from "date-fns";
 import BookingModal from "../Modals/BookingModal";
 import useAuth from "./../../hooks/useAuth";
 
-const RoomReservation = ({ room }) => {
+const RoomReservation = ({ room, refetch }) => {
   // console.log("Start date ---->", new Date(room.from).toLocaleString());
   // console.log("End date ---->", new Date(room.to).toLocaleString());
   const { user } = useAuth();
@@ -56,16 +56,25 @@ const RoomReservation = ({ room }) => {
       </div>
       <hr />
       <div className="p-4">
-        <Button onClick={() => setIsOpen(true)} label={"Reserve"} />
+        <Button
+          disabled={room?.booked}
+          onClick={() => setIsOpen(true)}
+          label={room?.booked === true ? "Booked" : "Reserve"}
+        />
       </div>
       {/* Modal */}
       <BookingModal
+        refetch={refetch}
         isOpen={isOpen}
         closeModal={closeModal}
         bookingInfo={{
           ...room,
           price: totalPrice,
-          guest: { name: user?.displayName },
+          guest: {
+            name: user?.displayName,
+            email: user?.email,
+            image: user?.photoURL,
+          },
         }}
       />
       <hr />
@@ -79,6 +88,7 @@ const RoomReservation = ({ room }) => {
 
 RoomReservation.propTypes = {
   room: PropTypes.object,
+  refetch: PropTypes.func,
 };
 
 export default RoomReservation;
