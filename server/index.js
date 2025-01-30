@@ -1,5 +1,4 @@
 const express = require("express");
-// import { PaymentIntents } from "./node_modules/stripe/esm/resources/PaymentIntents";
 const app = express();
 require("dotenv").config();
 const cors = require("cors");
@@ -241,16 +240,6 @@ async function run() {
       const bookingData = req.body;
       // save room booking info
       const result = await bookingsCollection.insertOne(bookingData);
-
-      // change room availability status
-      // const roomId = bookingData?.roomId;
-      // const query = { _id: new ObjectId(roomId) };
-      // const updateDoc = {
-      //   $set: { booked: true },
-      // };
-      // const updatedRoom = await roomsCollection.updateOne(query, updateDoc);
-      // console.log(updatedRoom);
-      // res.send({ result, updatedRoom });
       res.send(result);
     });
 
@@ -264,6 +253,14 @@ async function run() {
         $set: { booked: status },
       };
       const result = await roomsCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
+    // get all booking for a geust
+    app.get("/my-bookings/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      const query = { "guest.email": email };
+      const result = await bookingsCollection.find(query).toArray();
       res.send(result);
     });
 
