@@ -3,12 +3,7 @@ const app = express();
 require("dotenv").config();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const {
-  MongoClient,
-  ServerApiVersion,
-  ObjectId,
-  // timestamp,
-} = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const port = process.env.PORT || 8000;
@@ -62,7 +57,6 @@ async function run() {
     // Verify admin middleware
     const verifyAdmin = async (req, res, next) => {
       console.log("hlooooo");
-
       const user = req.user;
       const query = { email: user?.email };
       const result = await usersCollection.findOne(query);
@@ -287,8 +281,7 @@ async function run() {
     });
 
     // Admin Statistics
-    // verifyToken,verifyAdmin,
-    app.get("/admin-stat", async (req, res) => {
+    app.get("/admin-stat", verifyToken, verifyAdmin, async (req, res) => {
       const bookingDetails = await bookingsCollection
         .find({}, { projection: { date: 1, price: 1 } })
         .toArray();
@@ -357,6 +350,46 @@ async function run() {
         totalPrice,
         chartData,
         hostSince: timestamp,
+      });
+    });
+
+    // Guest Statistics
+    app.get("/guest-stat", verifyToken, async (req, res) => {
+      const { email } = req.user;
+      const bookingDetails = await bookingsCollection
+        .find(
+          { "guest.email": email },
+          {
+            projection: {
+              date: 1,
+              price: 1,
+            },
+          }
+        )
+        .toArray();
+      const totalPrice = bookingDetails.reduce(
+        (sum, booking) => sum + booking.price,
+        0
+      );
+      const { timestamp } = await usersCollection.findOne(
+        { email },
+        { projection: { timestamp: 1 } }
+      );
+
+      const chartData = bookingDetails.map((booking) => {
+        const day = new Date(booking.date).getDate();
+        const month = new Date(booking.date).getMonth() + 1;
+        const data = [`${day}/${month}`, booking?.price];
+        return data;
+      });
+      chartData.unshift(["Day", "Sales"]);
+      // chartData.splice(0, 0, ['Day', 'Sales'])
+      res.send({
+        // totalRooms,
+        totalBookings: bookingDetails.length,
+        totalPrice,
+        chartData,
+        guestSince: timestamp,
       });
     });
 
